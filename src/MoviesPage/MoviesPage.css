@@ -1,0 +1,67 @@
+/* Overall dark background */
+body {
+  background-color: #1c1c1c;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+/* Main container */
+.movies-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+}
+
+/* Fetch button section */
+.fetch-section {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+}
+
+.fetch-btn {
+  background-color: #2b004f;
+  color: white;
+  font-size: 18px;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 25px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.fetch-btn:hover {
+  background-color: #430072;
+}
+
+/* Movies list */
+.movies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  width: 80%;
+  max-width: 700px;
+}
+
+/* Movie card styling */
+.movie-card {
+  background-color: #2b004f;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.movie-title {
+  color: #ffeb3b;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.movie-description {
+  color: #f1f1f1;
+  font-size: 15px;
+  line-height: 1.6;
+}

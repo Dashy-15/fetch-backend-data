@@ -43,12 +43,12 @@ function MoviesPage() {
 
   const retryTimeoutRef = useRef(null);
 
-  async function fetchMoviesHandler() {
+  const fetchMoviesHandler = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("https://swapi.dev/api/film/");
+      const response = await fetch("https://swapi.dev/api/films/");
       if (!response.ok) {
         throw new Error("Something went wrong ....Retrying");
       }
@@ -69,32 +69,49 @@ function MoviesPage() {
       setIsRetrying(true);
       retryTimeoutRef.current = setTimeout(fetchMoviesHandler, 5000);
     }
-    setIsLoading(false);
-  }
 
-  function stopRetryingHandler() {
+    setIsLoading(false);
+  }, []);
+
+  // Cancel retrying
+  const stopRetryingHandler = useCallback(() => {
     if (retryTimeoutRef.current) {
       clearTimeout(retryTimeoutRef.current);
       retryTimeoutRef.current = null;
     }
     setIsRetrying(false);
     setError("Retrying stopped by user.");
-  }
+  }, []);
+
+  // Fetch movies automatically on mount
+  useEffect(() => {
+    fetchMoviesHandler();
+
+    // Cleanup retry timeout on unmount
+    return () => {
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+    };
+  }, [fetchMoviesHandler]);
 
   return (
     <div className="movies-container">
       <div className="fetch-section">
+        {/* Optional manual fetch button */}
         <button className="fetch-btn" onClick={fetchMoviesHandler}>
           Fetch Movies
         </button>
+
+        {isRetrying && (
+          <button className="fetch-btn" onClick={stopRetryingHandler}>
+            Cancel
+          </button>
+        )}
       </div>
 
       {isLoading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {isRetrying && (<button className="fetch-btn" onClick={stopRetryingHandler}>
-        Cancel
-      </button>)}
 
       {!isLoading && movies.length > 0 && (
         <ul className="movies-list">

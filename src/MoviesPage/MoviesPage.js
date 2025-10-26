@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import "./MoviesPage.css";
+import AddMoviesForm from "../AddMoviesForm/AddMoviesForm";
 
 // function MoviesPage() {
 //   const [movies, setMovies] = useState([]);
@@ -96,37 +97,42 @@ function MoviesPage() {
   }, [fetchMoviesHandler]);
 
   return (
-    <div className="movies-container">
-      <div className="fetch-section">
-        {/* Optional manual fetch button */}
-        <button className="fetch-btn" onClick={fetchMoviesHandler}>
-          Fetch Movies
-        </button>
-
-        {isRetrying && (
-          <button className="fetch-btn" onClick={stopRetryingHandler}>
-            Cancel
-          </button>
-        )}
+    <>
+      <div>
+        <AddMoviesForm />
       </div>
+      <div className="movies-container">
+        <div className="fetch-section">
+          {/* Optional manual fetch button */}
+          <button className="fetch-btn" onClick={fetchMoviesHandler}>
+            Fetch Movies
+          </button>
 
-      {isLoading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+          {isRetrying && (
+            <button className="fetch-btn" onClick={stopRetryingHandler}>
+              Cancel
+            </button>
+          )}
+        </div>
 
-      {!isLoading && movies.length > 0 && (
-        <ul className="movies-list">
-          {movies.map((movie) => (
-            <li className="movie-card" key={movie.id}>
-              <h2 className="movie-title">{movie.title}</h2>
-              <h3 className="movie-date">{movie.releaseDate}</h3>
-              <p className="movie-description">{movie.openingText}</p>
-            </li>
-          ))}
-        </ul>
-      )}
+        {isLoading && <p>Loading...</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {!isLoading && !error && movies.length === 0 && <p>No movies found.</p>}
-    </div>
+        {!isLoading && movies.length > 0 && (
+          <ul className="movies-list">
+            {movies.map((movie) => (
+              <li className="movie-card" key={movie.id}>
+                <h2 className="movie-title">{movie.title}</h2>
+                <h3 className="movie-date">{movie.releaseDate}</h3>
+                <p className="movie-description">{movie.openingText}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {!isLoading && !error && movies.length === 0 && <p>No movies found.</p>}
+      </div>
+    </>
   );
 }
 

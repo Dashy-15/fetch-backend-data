@@ -49,21 +49,24 @@ function MoviesPage() {
     setError(null);
 
     try {
-      const response = await fetch("https://swapi.dev/api/films/");
+      const response = await fetch("https://movies-list-73a50-default-rtdb.firebaseio.com/movies.json");
       if (!response.ok) {
         throw new Error("Something went wrong ....Retrying");
       }
 
       const data = await response.json();
 
-      const transformedMovies = data.results.map((movieData) => ({
-        id: movieData.episode_id,
-        title: movieData.title,
-        openingText: movieData.opening_crawl,
-        releaseDate: movieData.release_date,
-      }));
+      const results = [];
+      for (let key in data) {
+        results.push({
+          id: key,
+          title: data[key].title,
+          openingText: data[key].openingText,
+          releaseDate: data[key].releaseDate,
+        })
+      }
 
-      setMovies(transformedMovies);
+      setMovies(results);
       setIsRetrying(false);
     } catch (err) {
       setError(err.message);
@@ -95,12 +98,29 @@ function MoviesPage() {
       }
     };
   }, [fetchMoviesHandler]);
+  const addMovieHandler = (movie) => {
+    setMovies((prevMovies) => [...prevMovies, movie]);
+  };
+
+ async function deleteHandler(id) {
+  const response = await fetch(
+    `https://movies-list-73a50-default-rtdb.firebaseio.com/movies/${id}.json`,
+    {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+
+  if (!response.ok) {
+    alert("Failed to delete movie!");
+    return;
+  }
+  setMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== id));
+}
 
   return (
     <>
-      <div>
-        <AddMoviesForm />
-      </div>
+      <AddMoviesForm onAddMovie={addMovieHandler} />
       <div className="movies-container">
         <div className="fetch-section">
           {/* Optional manual fetch button */}
@@ -125,6 +145,7 @@ function MoviesPage() {
                 <h2 className="movie-title">{movie.title}</h2>
                 <h3 className="movie-date">{movie.releaseDate}</h3>
                 <p className="movie-description">{movie.openingText}</p>
+                <button className="delete-btn" onClick={() => deleteHandler(movie.id)}>Delete</button>
               </li>
             ))}
           </ul>

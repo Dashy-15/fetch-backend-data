@@ -2,20 +2,47 @@ import React, { useState } from "react";
 import { Form, Button, Card, Container } from "react-bootstrap";
 import "./AddMoviesForm.css";
 
-function AddMoviesForm() {
+function AddMoviesForm(props) {
     const [title, setTitle] = useState("");
     const [openingText, setOpeningText] = useState("");
     const [releaseDate, setReleaseDate] = useState("");
 
-    function addMovieHandler(event) {
-        event.preventDefault();
-        const newMovieList = {
-            title,
-            openingText,
-            releaseDate,
+    async function addMovieHandler(event) {
+    event.preventDefault();
+    const newMovie = { title, openingText, releaseDate };
+
+    try {
+        const response = await fetch(
+            "https://movies-list-73a50-default-rtdb.firebaseio.com/movies.json",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newMovie),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to add movie");
         }
-        console.log(newMovieList);
+
+        const savedMovie = await response.json(); // { name: "-Mxyz123abc" }
+
+        const movieWithId = {
+            id: savedMovie.name,
+            ...newMovie,
+        };
+
+        props.onAddMovie(movieWithId);
+
+        // Reset form
+        setTitle("");
+        setOpeningText("");
+        setReleaseDate("");
+    } catch (error) {
+        console.error(error);
     }
+}
+
 
     return (
         <Container className="form-container">
@@ -28,6 +55,7 @@ function AddMoviesForm() {
                                 type="text"
                                 placeholder="Enter movie title"
                                 className="input-field"
+                                value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                             />
                         </Form.Group>
@@ -39,6 +67,7 @@ function AddMoviesForm() {
                                 rows={3}
                                 placeholder="Enter opening text"
                                 className="input-field"
+                                value={openingText}
                                 onChange={(e) => setOpeningText(e.target.value)}
                             />
                         </Form.Group>
@@ -49,6 +78,7 @@ function AddMoviesForm() {
                                 type="date"
                                 placeholder="YYYY-MM-DD"
                                 className="input-field"
+                                value={releaseDate}
                                 onChange={(e) => setReleaseDate(e.target.value)}
                             />
                         </Form.Group>
